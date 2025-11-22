@@ -15,14 +15,15 @@
 - We will need a separate async microservice for the persistence layer. This will handle DB persistence.
 - To handle concurrent requests and implement horizontal scaling, we need to have a API microservices, which will expose stateless REST API endpoints.
 
-                REST API Microservice (AM)
+                API Microservice (AM)
+                [Horizontally scalable: N-instances]
                 - data validation
                 - data mapping to DTO
-                - WebSocket handlers (trades, orderbook snapshots)
-                        |
-                        | Redis Streams (order_queue)
-                        |
-                        ▼
+                - WebSocket handlers (trades, orderbook snapshots) and broadcast
+                        |                                                 ▲
+                        | Redis Streams (order_queue)                     | Redis Pub/Sub
+                        |                                                 |(trade events, snapshots)
+                        ▼                                                 |
                 Order Book Microservice (OBM)
                 [SINGLE instance - sequential processing]
                 - Order matching engine
@@ -30,12 +31,12 @@
                 - Trade execution 
                 - Period snapshot at every 1 sec
                 - WAL append and CRS
-                        |                                     |      
-                        | Async tasks                         | Redis Pub/Sub
-                        |                                     | (trade events, snapshots)
-                        ▼                                     ▼
-                Persistence Layer (PL)                       API Microservice (AM)
-                - Async DB writes                            - Broadcasts to WebSocket clients
+                        |     
+                        | Async tasks                       
+                        |  
+                        ▼         
+                Persistence Layer (PL)       
+                - Async DB writes  
                 - Off critical path
                         |
                         ▼

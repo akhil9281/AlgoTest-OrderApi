@@ -1,0 +1,167 @@
+{
+	"info": {
+		"_postman_id": "93852425-4960-46e1-b26f-ea1e707fd8eb",
+		"name": "ALGOTEST",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30672581"
+	},
+	"item": [
+		{
+			"name": "Create Order",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"price\": 123.95,\n  \"quantity\": 100,\n  \"side\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/orders/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"orders",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Order",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"updated_price\": 111\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/orders/{order_id}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"orders",
+						"{order_id}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Order",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/orders/{order_id}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"orders",
+						"{order_id}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Orders",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fetch Order",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/orders/{order_id}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"orders",
+						"{order_id}"
+					]
+				},
+				"description": "Generated from cURL: curl -X 'GET' \\\n  'http://localhost:8000/trades' \\\n  -H 'accept: application/json'"
+			},
+			"response": []
+		},
+		{
+			"name": "All Trades",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/trades",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"trades"
+					]
+				},
+				"description": "Generated from cURL: curl -X 'GET' \\\n  'http://localhost:8000/trades' \\\n  -H 'accept: application/json'"
+			},
+			"response": []
+		}
+	]
+}
