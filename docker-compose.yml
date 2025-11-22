@@ -1,0 +1,87 @@
+services:
+  # Redis service for message queue and pub/sub
+  redis:
+    image: redis:alpine
+    container_name: orderapi-redis
+    ports:
+      - "6380:6379"  # Map host 6380 to container 6379 in case of existing redis process in the system
+    networks:
+      - orderapi-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # PostgreSQL database
+  db:
+    image: postgres:15-alpine
+    container_name: orderapi-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: orderdb
+    ports:
+      - "5433:5432"  # Map host 5433 to container 5432 in case of existing postgres process in system
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./scripts/init_db.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - orderapi-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Order Book Microservice (OBM)
+  obm:
+    build:
+      context: ./src/obm_service
+      dockerfile: Dockerfile
+    container_name: orderapi-obm-v2
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    environment:
+      REDIS_URL: redis://redis:6379
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/orderdb
+      WAL_FILE_PATH: /app/data/wal.log
+    volumes:
+      - ./data:/app/data
+      - ./src/shared:/app/shared
+    networks:
+      - orderapi-network
+    restart: unless-stopped
+
+  # API Service
+  api:
+    build:
+      context: ./src/api_service
+      dockerfile: Dockerfile
+    container_name: orderapi-api-v2
+    depends_on:
+      redis:
+        condition: service_healthy
+      obm:
+        condition: service_started
+    ports:
+      - "8000:8000"
+    environment:
+      REDIS_URL: redis://redis:6379
+      API_HOST: 0.0.0.0
+      API_PORT: 8000
+    volumes:
+      - ./src/shared:/app/shared
+    networks:
+      - orderapi-network
+    restart: unless-stopped
+
+networks:
+  orderapi-network:
+    driver: bridge
+
+volumes:
+  db_data:
